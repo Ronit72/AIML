@@ -57,7 +57,7 @@ class GestureRecognizer:
         self.kernel = np.ones((3, 3), np.uint8)
         self.recognizer = load_model(model_path)
         self.is_tracking = False
-        self.hand_bbox = (350, 50, 350, 600)
+        self.hand_bbox = (116, 116, 170, 170)
 
         # Begin capturing video
         self.video = cv2.VideoCapture(capture)
