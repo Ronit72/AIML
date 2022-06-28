@@ -272,7 +272,7 @@ class GestureRecognizer:
             faces = face_classifier.detectMultiScale(gray)
             if f==1:
                 for (x,y,w,h) in faces:
-                    if w>=120:
+                    if w>=100:
                         cv2.rectangle(display,(x,y),(x+w,y+h),(0,255,255),2)
                         roi_gray = gray[y:y+h,x:x+w]
                         roi_gray = cv2.resize(roi_gray,(48,48),interpolation=cv2.INTER_AREA)
