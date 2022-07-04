@@ -7,6 +7,13 @@ from tensorflow.keras.utils import img_to_array
 from keras.preprocessing import image
 import cv2
 import numpy as np
+import time
+import datetime
+
+import tkinter as tk
+from tkinter import *
+import os
+window=Tk()
 MODEL_PATH = "hand_model_gray.hdf5"
 
 face_classifier = cv2.CascadeClassifier(r'haarcascade_frontalface_default.xml')
@@ -61,6 +68,9 @@ class GestureRecognizer:
 
         # Begin capturing video
         self.video = cv2.VideoCapture(capture)
+        width  = self.video.get(3)  # float `width`
+        height = self.video.get(4)  # float `height`
+        # print('width, height:', width, height)
         if not self.video.isOpened():
             print("Could not open video")
 
@@ -103,6 +113,8 @@ class GestureRecognizer:
         f=0 
         g=""
         e=""
+        s=45
+        arrm=[]
         while True:
             # Read a new frame
             ok, self.frame = self.video.read()
@@ -272,7 +284,7 @@ class GestureRecognizer:
             faces = face_classifier.detectMultiScale(gray)
             if f==1:
                 for (x,y,w,h) in faces:
-                    if w>=100:
+                    if w>=110:
                         cv2.rectangle(display,(x,y),(x+w,y+h),(0,255,255),2)
                         roi_gray = gray[y:y+h,x:x+w]
                         roi_gray = cv2.resize(roi_gray,(48,48),interpolation=cv2.INTER_AREA)
@@ -292,15 +304,44 @@ class GestureRecognizer:
                         else:
                             cv2.putText(display,'No Faces',(30,80),cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2)
                 z=(hg[g]+fe[e])/2
+                arrm.append(z)
                 cv2.putText(display, 
                             "Stars: "+ str(z), 
                             (15,65), 
                             cv2.FONT_HERSHEY_SIMPLEX, 
                             0.75, (0, 0, 255), 2)
+                s=s-1
+                cv2.putText(display,'time left-'+str(s),(15,95),cv2.FONT_HERSHEY_SIMPLEX,0.9,(50,170,50),2)
+                if s==0:
+                    cv2.destroyAllWindows()
+                    break
             cv2.imshow('Display',display)
             # if cv2.waitKey(1) & 0xFF == ord('q'):
-            #     break        
-                      
-if __name__ == "__main__":
+            #     break  
+        if len(arrm)>0:
+            arrm.sort()      
+            z1=len(arrm)//2
+            window1=Tk()
+            z2=Label(window1, text="Rating: "+str(arrm[z1]), font=('Copperplate Gothic Bold',20), foreground="gold").place(x=220,y=180)
+            window1.title("Results")
+            window1.geometry("640x480")
+            window1.tk.call('wm', 'iconphoto', window1._w, tk.PhotoImage(file=r'result.png'))
+            window1.mainloop()
+            # window.print(arrm[z1])
+
+def open_prompt():
+    window.destroy()
     recognizer = GestureRecognizer(0)
     recognizer.run()
+
+z3=Label(window, text='Click Here to start!!', font=('Copperplate Gothic Bold',20)).place(x=170,y=180)
+tk.Button(window, text= "Start", command= open_prompt,font=('Copperplate Gothic Bold',20), background="cyan").place(x=270,y=240)
+# btn=Button(window, text="Start", fg='green',align="center")
+# btn.place(x=80, y=100)
+window.title("Start")
+window.geometry("640x480")
+window.tk.call('wm', 'iconphoto', window._w, tk.PhotoImage(file=r'start.png'))
+window.mainloop()
+# if __name__ == "__main__":
+#     recognizer = GestureRecognizer(0)
+#     recognizer.run()
